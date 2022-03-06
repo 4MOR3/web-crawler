@@ -10,10 +10,13 @@
   "author": "Sean_Yang",
   "license": "GPL-3.0-or-later",
   "dependencies": {
+    "axios": "^0.26.0",
     "cheerio": "^1.0.0-rc.10",
+    "iconv-lite": "^0.6.3",
     "koa": "^2.13.4",
     "koa-router": "^10.1.1",
     "nodemon": "^2.0.15",
+    "puppeteer": "^13.4.0",
     "ts-node": "^10.5.0",
     "typescript": "^4.5.5"
   },
