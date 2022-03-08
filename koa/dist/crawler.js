@@ -1,23 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -58,50 +39,51 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Koa = __importStar(require("koa"));
-var crawler_1 = __importDefault(require("./crawler"));
-var app = new Koa.default();
-var msg = 'hello the fucking world, suck my ball!';
-function handler(ctx, next) {
+var axios_1 = __importDefault(require("axios"));
+var cheerio_1 = __importDefault(require("cheerio"));
+var iconv_lite_1 = __importDefault(require("iconv-lite"));
+var url = 'https://www.baidu.com/';
+function crawler(ctx, next) {
     return __awaiter(this, void 0, void 0, function () {
-        var err_1;
+        var parser;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, next()];
+                    console.log('crawler1');
+                    parser = url.split('/');
+                    if (!parser[0].includes('http')) {
+                        throw new Error('need full url(http? https?)');
+                    }
+                    // await axios(`${parser[0]}//${parser[2]}/robots.txt`)
+                    //   .then(resp => { 
+                    //     console.log(resp.data);
+                    //   })
+                    return [4 /*yield*/, (0, axios_1.default)({
+                            responseType: "arraybuffer",
+                            url: url
+                        }).then(function (resp) {
+                            var data = resp.data;
+                            var $ = cheerio_1.default.load(data);
+                            var charset = $('meta').attr('charset');
+                            // 根据编码格式进行解码
+                            if (charset) {
+                                data = iconv_lite_1.default.decode(resp.data, charset);
+                                $ = cheerio_1.default.load(data);
+                            }
+                            ctx.body = $.html().toString();
+                        })];
                 case 1:
+                    // await axios(`${parser[0]}//${parser[2]}/robots.txt`)
+                    //   .then(resp => { 
+                    //     console.log(resp.data);
+                    //   })
                     _a.sent();
-                    return [3 /*break*/, 3];
+                    return [4 /*yield*/, next()];
                 case 2:
-                    err_1 = _a.sent();
-                    console.log('err caught');
-                    console.log(err_1);
-                    ctx.body = err_1;
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/];
-            }
-        });
-    });
-}
-;
-function main(ctx, next) {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    ctx.body = msg;
-                    console.log('main1');
-                    return [4 /*yield*/, next()];
-                case 1:
                     _a.sent();
-                    console.log('main2');
                     return [2 /*return*/];
             }
         });
     });
 }
-app.use(handler);
-app.use(main);
-app.use(crawler_1.default);
-app.listen(4396);
+exports.default = crawler;
