@@ -1,6 +1,17 @@
 import { RouteObject } from "react-router-dom";
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
+import { ReactNode } from "react";
+
+
 import MainLayout from '../MainLayout/MainLayout'
+
+const StaticCrawler = lazy(() => import('../StaticCrawler/StaticCrawler'))
+
+function lazyLoad(children: ReactNode): ReactNode {
+  return <Suspense fallback={<h1>Loading...</h1>}>
+    {children}
+  </Suspense>
+}
 
 const routes: RouteObject[] = [
   {
@@ -9,7 +20,7 @@ const routes: RouteObject[] = [
     children: [
       {
         path: '/StaticCrawler',
-        element: () => import('../StaticCrawler/StaticCrawler'),
+        element: lazyLoad(<StaticCrawler/>),
       }
     ]
     
