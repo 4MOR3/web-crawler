@@ -12,4 +12,14 @@
   [data-theme="dark"] .site-layout .site-layout-background {
     background: #141414;
   }
+  .item{ 
+    height: 52px;
+    margin: 0px !important;
+  }
+  Footer{
+    position: fixed;
+    bottom: 48px;
+    width: 200px;
+
+  }
 }

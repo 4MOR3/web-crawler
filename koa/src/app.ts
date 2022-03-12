@@ -1,9 +1,8 @@
-import * as Koa from 'koa'
+import Koa from 'koa'
 import crawler from './crawler';
 
-
-const app = new Koa.default()
-async function handler (ctx:Koa.Context, next:Koa.Next) :Promise<void>{
+const app = new Koa()
+async function handler (ctx: Koa.Context, next:Koa.Next) :Promise<void>{
   try {
     await next();
   } catch (err) {

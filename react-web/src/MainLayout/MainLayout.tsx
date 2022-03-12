@@ -1,45 +1,48 @@
-import React, { useState } from 'react';
-import logo from './logo.svg';
+import  routes from '../router/index'
+import { useState, useEffect } from 'react';
 import './MainLayout.scss';
-import { Layout, Menu } from 'antd'
-import { BrowserRouter, Routes, Route, Link, useRoutes } from 'react-router-dom';
+import { Button, Layout, Menu, Switch } from 'antd'
+import { Link, Outlet, Location } from 'react-router-dom';
+import { SiderTheme } from 'antd/lib/layout/Sider';
 
 
-import { formatCountdown } from 'antd/lib/statistic/utils';
 const { Header, Content, Sider } = Layout;
+function MainLayout() { 
+   
 
- function MainLayout() { 
-  const [data, setData] = useState<string>('test')
-  function click(e: React.MouseEvent) { 
-    setData(Math.random().toFixed(7))
-  }
-  const [collapsed, setCola] = useState<boolean>(false)
-  const [theme, setTheme] = useState<string>('light')
+  const [theme, setTheme] = useState<SiderTheme>('light')
+  const routerList = routes.find(i => i.name === 'master')?.children
+    ?.map((data, ind) => {
+      if (data.path) {
+        return <Menu.Item key={ind.toString()} className='item'>
+          {data.name}
+          <Link to={data.path}></Link>
+        </Menu.Item>
+      } else { 
+        return ''
+      }
+    })
   return (
+    
     <Layout style={{ minHeight: '100vh' }} className='main-layout'>
-        <Sider collapsible collapsed={collapsed} theme='light' onCollapse={() => { setCola(!collapsed)}}>
-          <div className="logo" />
-            <Menu theme='light' defaultSelectedKeys={['1']} mode="inline">
-              <Menu.Item key="1" >
-              
-            <Link to={ '/staticCrawler' }>静态页面</Link>
-              </Menu.Item>
-              <Menu.Item key="2" >
-                动态页面
-              </Menu.Item>
-              <Menu.Item key="9" >
-                Files
-              </Menu.Item>
-            </Menu>
-            
-          </Sider>
-          <Layout className="site-layout">
-            <Header className="site-layout-background" style={{ padding: 0 }} />
-            <Content style={{ margin: '0 16px' }}>
-              
-            </Content>
-          </Layout>
+      <Sider collapsible  theme={theme} >
+        <Menu theme={theme} defaultSelectedKeys={['1']} mode="inline">
+          { routerList }
+        </Menu>   
+        <Button type='primary' 
+          onClick={() => {
+          setTheme(theme === 'light' ? 'dark' : 'light');
+        }}>Switch Theme</Button>
+      </Sider>
+      <Layout className="site-layout">
+        <Header className="site-layout-background" style={{ padding: 0 }} />
+          <Content style={{ margin: '0 16px' }}>
+            <Outlet></Outlet>
+          </Content>
       </Layout>
+    </Layout>
+      
+    
   );
  }
 export default MainLayout;
