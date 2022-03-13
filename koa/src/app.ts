@@ -1,7 +1,6 @@
 import Koa from 'koa'
-import crawler from './crawler';
+import Router from './router'
 
-const app = new Koa()
 async function handler (ctx: Koa.Context, next:Koa.Next) :Promise<void>{
   try {
     await next();
@@ -11,12 +10,17 @@ async function handler (ctx: Koa.Context, next:Koa.Next) :Promise<void>{
     ctx.body = err;
   }
 };
+
 async function main(ctx: Koa.Context, next: Koa.Next): Promise<void> {
   console.log('main1')
   await next()
   console.log('main2')
 }
+
+const app = new Koa()
 app.use(handler)
 app.use(main)
-app.use(crawler)
+app.use(Router.routes());
+app.use(Router.allowedMethods());
+
 app.listen(4396)
