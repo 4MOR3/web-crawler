@@ -1,36 +1,54 @@
 import './Login.scss'
 import { Form, Input, Button } from 'antd';
-import { LockOutlined } from '@ant-design/icons';
+import { LockOutlined, LoginOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom'
+import { useContext, useEffect, useRef } from 'react';
+import { globalContext } from '../App'
+import { C3DS } from './SimpleThree'
+
 
 function Login() { 
+  const context = useContext(globalContext)
   const nav = useNavigate();
+  
   async function onFinish(e: any) { 
     const resp = await fetch(`/login?password=${e.password}`)
     const data = await resp.json();
     if (data.flag) { 
-      nav(`/staticCrawler`)
+      context.login = true;
+      nav(`/`)
     }
   }
-  function onFinishFailed() { }
+
+  const threeContainer = useRef<HTMLDivElement>(null)
+  useEffect(() => { 
+    // mounted()
+    const main: C3DS = new C3DS()
+    main.init(threeContainer.current)
+    main.animate()
+
+
+    return () => { 
+      // unmounted()
+      main.destructor();
+    }
+  },[])
   return (
-    <div className='login-form'>
+    <div className='login-form' ref={threeContainer} >
       <Form
         name="basic"
         onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
-        <Form.Item
-          name="password"
-        >
+        <Form.Item name="password">
           <Input.Password
             prefix={<LockOutlined className="site-form-item-icon" />}
             placeholder='Enter the CODE'
-            className='input' />
+            className='input'
+            size='large'/>
         </Form.Item>
-        <Form.Item wrapperCol={{ offset: 7, span: 16 }}>
-          <Button type="primary" htmlType="submit" size='large' shape='round'>
+        <Form.Item >
+          <Button type="primary" htmlType="submit" size='large' shape='round' icon={ <LoginOutlined/> }>
             Submit
           </Button>
         </Form.Item>

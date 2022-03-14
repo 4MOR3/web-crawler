@@ -1,35 +1,41 @@
 import  routes from '../router/index'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import './MainLayout.scss';
 import { Button, Layout, Menu, Switch } from 'antd'
-import { Link, Outlet, Location } from 'react-router-dom';
+import { Link, Outlet, Location, useNavigate } from 'react-router-dom';
 import { SiderTheme } from 'antd/lib/layout/Sider';
-
+import { globalContext } from '../App'
 
 const { Header, Content, Sider } = Layout;
-function MainLayout() { 
-   
 
+function MainLayout() { 
+
+  const nav = useNavigate()
+  const context = useContext(globalContext)
+  useEffect(() => {
+    if (!context.login) nav('/login')
+  })
+  
   const [theme, setTheme] = useState<SiderTheme>('light')
   const routerList = routes.find(i => i.name === 'master')?.children
     ?.map((data, ind) => {
       if (data.path) {
         return <Menu.Item key={ind.toString()} className='item'>
-          {data.name}
+          {`${data.name}`}
           <Link to={data.path}></Link>
         </Menu.Item>
       } else { 
-        return ''
+        return undefined
       }
     })
   return (
-    
     <Layout style={{ minHeight: '100vh' }} className='main-layout'>
-      <Sider collapsible  theme={theme} >
+      <Sider   theme={theme} >
         <Menu theme={theme} defaultSelectedKeys={['1']} mode="inline">
           { routerList }
         </Menu>   
         <Button type='primary' 
+          className='site-button'
           onClick={() => {
           setTheme(theme === 'light' ? 'dark' : 'light');
         }}>Switch Theme</Button>

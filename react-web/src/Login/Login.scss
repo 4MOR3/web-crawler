@@ -15,11 +15,18 @@
     font-weight: 675;
     color: #5C9DF9 !important;
   }
-  @media screen {
+  Button{
+    float: right;
+  }
+  @media screen and (min-width: 770px) {
+    Form{
+      width: 23%;
+      height: 50%;
+    }
     
   }
-  Form{
+  @media screen and (max-width: 770px){Form{
     width: 50%;
     height: 50%;
-  }
+  }}
 }
