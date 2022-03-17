@@ -1,20 +1,29 @@
 import Koa from 'koa'
 import Router from './router'
+import Api from './Api'
 
-async function handler (ctx: Koa.Context, next:Koa.Next) :Promise<void>{
+
+declare module 'koa' { 
+  interface Context<T = Api.BaseApi> { 
+    body: T
+  }
+}
+async function handler(ctx: Koa.Context<Api.BaseApi>, next: Koa.Next): Promise<void>{
   try {
     await next();
-  } catch (err) {
+  } catch (err: any) {
     console.log('err caught')
-    console.log(err)
-    ctx.body = err;
+    console.log(err.toString())
+    ctx.body = {
+      code: 2,
+      message: err.toString(),
+      data: {}
+    }
   }
 };
 
 async function main(ctx: Koa.Context, next: Koa.Next): Promise<void> {
-  console.log('main1')
   await next()
-  console.log('main2')
 }
 
 const app = new Koa()

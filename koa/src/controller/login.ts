@@ -1,13 +1,34 @@
 import Koa from 'koa'
-
-async function login(ctx: Koa.Context, next: Koa.Next) {
+import  Api from '../Api'
+async function login(ctx: Koa.Context<Api.LoginApi>, next: Koa.Next) {
   const key = ctx.query.password;
-  key === "990121"
-    ? ctx.response.body = { flag: 1 }
-    : ctx.body = {flag: 0};
-  console.log(key)
-  console.log(ctx.body)
+  const dueTime = new Date();
+  dueTime.setDate(dueTime.getDate() + 7)
+  if (verify(key)) {
+    ctx.body = {
+      code: Api.Code.success,
+      message: 'Verify Success!', 
+      data: {
+        token: '0',
+        dueTime: dueTime
+      }
+    }
+  } else { 
+    ctx.body = {
+      code: Api.Code.fail,
+      message: 'Verify failed, maybe check if the password is right',
+      data: {
+        token: '',
+        dueTime: new Date()
+      }
+    }
+  }
+  
   
   await next();
+}
+function verify(password: string | string[] | undefined): boolean {
+  if (password === '990121') return true;
+  else return false
 }
 export default login

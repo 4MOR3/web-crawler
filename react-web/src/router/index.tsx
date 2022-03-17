@@ -6,7 +6,7 @@ import MainLayout from '../MainLayout/MainLayout'
 import { lazy, Suspense } from "react";
 import { RouteObject } from "react-router-dom";
 import { ReactNode } from "react";
-
+import Haokan  from'../Haokan/Haokan'
 const StaticCrawler = lazy(() => import('../StaticCrawler/StaticCrawler'))
 const icon = <LoadingOutlined style={{ fontSize: 36 }} spin />;
 
@@ -30,6 +30,10 @@ const routes: ProRouteObject[] = [
     name: 'master',
     element: (<MainLayout/>),
     children: [
+      {
+        path: '',
+        element: (<Haokan></Haokan>)
+      },
       {
         name: '静态网页爬取',
         path: '/StaticCrawler',

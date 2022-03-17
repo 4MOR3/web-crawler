@@ -1,22 +1,32 @@
 import './Login.scss'
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 import { LockOutlined, LoginOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom'
 import { useContext, useEffect, useRef } from 'react';
 import { globalContext } from '../App'
 import { C3DS } from './SimpleThree'
+import  fetchPro  from '../utils/fetchPro'
 
-
+interface LoginData { 
+  code: number,
+  message: string
+}
 function Login() { 
   const context = useContext(globalContext)
   const nav = useNavigate();
   
   async function onFinish(e: any) { 
-    const resp = await fetch(`/login?password=${e.password}`)
-    const data = await resp.json();
-    if (data.flag) { 
+    
+    const resp = await fetch('')
+    const data = resp.json()
+    console.log(data)
+    const body = await fetchPro<LoginData>(`/login?password=${e.password}`)
+    console.log(body)
+    if (!body.code) {
       context.login = true;
       nav(`/`)
+    } else { 
+      message.error(body.message)
     }
   }
 
@@ -30,6 +40,8 @@ function Login() {
 
     return () => { 
       // unmounted()
+      console.log(main.camera);
+      console.log(main.controls)
       main.destructor();
     }
   },[])

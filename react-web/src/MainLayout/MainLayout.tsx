@@ -1,8 +1,8 @@
 import  routes from '../router/index'
 import { useState, useEffect, useContext } from 'react';
 import './MainLayout.scss';
-import { Button, Layout, Menu, Switch } from 'antd'
-import { Link, Outlet, Location, useNavigate } from 'react-router-dom';
+import { Button, Layout, Menu } from 'antd'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { SiderTheme } from 'antd/lib/layout/Sider';
 import { globalContext } from '../App'
 
@@ -15,12 +15,13 @@ function MainLayout() {
   useEffect(() => {
     if (!context.login) nav('/login')
   })
+  const location = useLocation()
   
   const [theme, setTheme] = useState<SiderTheme>('light')
   const routerList = routes.find(i => i.name === 'master')?.children
     ?.map((data, ind) => {
       if (data.path) {
-        return <Menu.Item key={ind.toString()} className='item'>
+        return <Menu.Item key={data.path} className='item'>
           {`${data.name}`}
           <Link to={data.path}></Link>
         </Menu.Item>
@@ -31,7 +32,7 @@ function MainLayout() {
   return (
     <Layout style={{ minHeight: '100vh' }} className='main-layout'>
       <Sider   theme={theme} >
-        <Menu theme={theme} defaultSelectedKeys={['1']} mode="inline">
+        <Menu theme={theme} selectedKeys={ [location.pathname] } mode="inline">
           { routerList }
         </Menu>   
         <Button type='primary' 

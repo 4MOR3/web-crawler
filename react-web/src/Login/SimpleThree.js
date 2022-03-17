@@ -49,7 +49,7 @@ export class C3DS {
     let canvas = document.createElement('canvas');
     canvas.style.height = '100%';
     canvas.style.width = '100%';
-    canvas.style.position = 'fixed';
+    canvas.style.position = 'absolute';
     canvas.style.zIndex = -1;
     
     dom.appendChild(canvas);
@@ -73,7 +73,7 @@ export class C3DS {
       1, 				//视窗的高宽比
       1,			  //near,近面，距离相机小于0.1则不会被渲染。
       20000);		//far,远面，距离大于1000则不会被渲染
-    camera.position.set(0,500,0);                         //相机位置 
+    camera.position.set(100,50, -100);                         //相机位置 
     camera.lookAt(0,0,0);     
 
     //OrbitControls：控制器，鼠标拖动
@@ -97,7 +97,8 @@ export class C3DS {
     this.camera = camera;
     this.genSky();
     this.genWater();
-    this.updateSun(2,180)
+    this.genNight();
+    this.updateSun(1.77,180)
     this.resize()
     return this;
   }
@@ -115,16 +116,11 @@ export class C3DS {
 		let width = window.innerWidth;
 		this.camera.aspect = width / height;
 		this.camera.updateProjectionMatrix();
-    this.renderer.setSize(width, height, false);
+    this.renderer.setSize(width, height,false);
     this.composer.setSize( width, height );
     this.effectFXAA.uniforms[ 'resolution' ].value.set( 1 / width, 1 / height );
   }
 
-  
-
-  // | | |            | | |
-  // V V V 交互事件逻辑 V V V
-  // 
   destructor() { 
     this.freeUp(this.scene)
     cancelAnimationFrame(this.innerCounter);
@@ -155,21 +151,36 @@ export class C3DS {
     const sky = new Sky();
     sky.scale.setScalar( 10000000 );
   
-    this.scene.add( sky );
-  
     const skyUniforms = sky.material.uniforms;
-  
     skyUniforms[ 'turbidity' ].value = 3;
 		skyUniforms[ 'rayleigh' ].value = 1;
 		skyUniforms[ 'mieCoefficient' ].value = 0.005;
 		skyUniforms[ 'mieDirectionalG' ].value = 0.8;
-    skyUniforms[ 'sunPosition' ].value = new THREE.Vector3(-377, 100, 50)
+    skyUniforms['sunPosition'].value = new THREE.Vector3(-377, 100, 50)
+    
     const pmremGenerator = new THREE.PMREMGenerator( this.renderer ); 
     this.scene.environment = pmremGenerator.fromScene(sky).texture;
     this.sky = sky;
+    const time = new Date().getHours();
+    if (time >= 7 && time < 19) {
+      this.scene.add(sky);
+      this.controls.target.set(-22, 367, 3.5);
+      this.camera.position.set(74, 398, 111);
+    } else { 
+      this.controls.target.set(-22, 43, -13);
+      this.camera.position.set(-10, 69, -160);
+    }
+    
+  }
+
+  genNight() { 
+    const texture = new THREE.CubeTextureLoader().setPath('nightSky/')
+    
+    .load(['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg'])
+    this.scene.background = texture;
   }
   genWater() { 
-    const waterGeometry = new THREE.PlaneGeometry( 10000, 10000 );
+    const waterGeometry = new THREE.PlaneBufferGeometry( 100000, 100000 );
     const water = new Water(
       waterGeometry,
       {
