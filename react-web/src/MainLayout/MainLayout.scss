@@ -23,6 +23,13 @@
     position: fixed;
     bottom: 48px;
     width: 200px;
-
+  }
+  Header{
+    vertical-align: middle;
+  }
+  .logout{
+    top:50%;
+    float: right;
+    margin-right: 3%;
   }
 }

@@ -1,22 +1,16 @@
 import { message } from 'antd'
+import Api from '../Api'
 
-interface BaseResData<T = object> { 
-  code: number,
-  message: string,
-  data?: T,
-}
 
-async function fetchPro<T = Object>(input: RequestInfo, init?: RequestInit | undefined):Promise<BaseResData<T>> { 
+async function fetchPro<T extends Api.BaseApi = Api.BaseApi>(input: RequestInfo, init?: RequestInit | undefined):Promise<T> { 
   const resp = await fetch(input, init);
   if (resp.status >= 400) { 
     message.error(`${resp.status} SERVER ERROR!!!`)
     throw new Error(`${resp.status} SERVER ERROR!!!`)
   }
-  
-  const body: BaseResData<T> = await resp.json();
-  if (body.code) { 
-    message.warn(`RUNTIME ERROR  ${body.message} `)
-
+  const body: T = await resp.json();
+  if (body.code) {
+    message.warn(body.message);
   }
   return body;
 }

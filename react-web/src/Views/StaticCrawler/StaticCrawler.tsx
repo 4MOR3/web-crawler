@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import { Button, Input, Form, message } from "antd";
+import { Button, Input, Form } from "antd";
 import './StaticCrawler.scss'
 import { LinkOutlined } from '@ant-design/icons'
-import fetchPro from "../utils/fetchPro";
-
-
+import fetchPro from "../../utils/fetchPro";
+import Api from "../../Api"
 
 function StaticCrawler() {  
   useEffect(() => { 
@@ -13,8 +12,6 @@ function StaticCrawler() {
 
     }
   }, [])
-  useEffect(() => { console.log('update')})
-  let url: string;
   interface BtnInfo { 
     isLoading: boolean,
     text: string,
@@ -27,8 +24,9 @@ function StaticCrawler() {
   async function crawl(e: any) {
     setBtnInfo( { isLoading: true, text: 'CRAWLING...' } )
     try {
-      const body = await fetchPro(`/staticCrawler?url=${e.url}`);
+      const body = await fetchPro<Api.StaticWebApi>(`/staticWeb?url=${e.url}`);
       console.log(body)
+      const data = body.data.text;
     } catch (e) { }
     setBtnInfo({ isLoading: false, text: "CRAWL!!!" });
   }
@@ -50,3 +48,8 @@ function StaticCrawler() {
   </div>)
 }
 export default StaticCrawler;
+function parseHTML(data: string) {
+  const res = [];
+  
+
+}

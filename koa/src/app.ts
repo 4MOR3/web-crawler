@@ -1,14 +1,18 @@
 import Koa from 'koa'
 import Router from './router'
 import Api from './Api'
+import { Server } from 'http';
+import wsService from './ws/wsService'
+import * as ws from 'ws'
 
+const PORT: number = 4396;
 
 declare module 'koa' { 
-  interface Context<T = Api.BaseApi> { 
+  interface Context<T extends Api.BaseApi = Api.BaseApi> { 
     body: T
   }
 }
-async function handler(ctx: Koa.Context<Api.BaseApi>, next: Koa.Next): Promise<void>{
+async function errHandler(ctx: Koa.Context, next: Koa.Next): Promise<void>{
   try {
     await next();
   } catch (err: any) {
@@ -23,13 +27,17 @@ async function handler(ctx: Koa.Context<Api.BaseApi>, next: Koa.Next): Promise<v
 };
 
 async function main(ctx: Koa.Context, next: Koa.Next): Promise<void> {
+  console.log('main')
   await next()
 }
 
 const app = new Koa()
-app.use(handler)
+app.use(errHandler)
 app.use(main)
 app.use(Router.routes());
 app.use(Router.allowedMethods());
 
-app.listen(4396)
+const server: Server = app.listen(PORT)
+const wsServer = new ws.Server({ server: server })
+
+wsServer.on('connection', wsService)

@@ -1,10 +1,14 @@
-
 import * as Koa from 'koa'
 import axios from 'axios';
-import cheerio from 'cheerio'
+import * as cheerio from 'cheerio'
 import iconv from 'iconv-lite'
 import Api from '../Api'
-async function crawler(ctx: Koa.Context, next: Koa.Next): Promise<void>  { 
+interface StaticWebApi extends Api.BaseApi { 
+  data: {
+
+  }
+}
+async function staticWeb(ctx: Koa.Context, next: Koa.Next): Promise<void>  { 
   const url = ctx.query.url?.toString();
   if (url) { 
     const parser: string[] = url.split('/');
@@ -18,24 +22,44 @@ async function crawler(ctx: Koa.Context, next: Koa.Next): Promise<void>  {
       responseType: "arraybuffer",
       url: url
     })
-    
     console.log('complete')
-    let data: Uint8Array | string = resp.data;
+    let data: Uint8Array  = resp.data;
     let $ = cheerio.load(data.toString());
     const charset = $('meta').attr('charset')
     
-    data = iconv.decode(resp.data, charset || 'utf-8');
-    
-    $ = cheerio.load(data);
-    console.log($)
+    const decoder: string = iconv.decode(resp.data, charset || 'utf-8');
+    $ = cheerio.load(decoder);
+    interface HJson { 
+      tag: string;
+      content: string;
+      attr: object;
+    }
+    const elLib: HJson[] = [];
+  
     ctx.body = {
       message : 'success',
       code: Api.Code.success,
-      data: { text:data }
+      data: { text: ctx.context }
     }
   }
-  
   await next()
   
 }
-export default crawler;
+
+interface El extends Object { 
+  type: string,
+  name: string,
+  children: El[],
+}
+function cheerTrav(body: cheerio.Cheerio) { 
+  const res: El[] = [];
+  if (body.children()) { 
+    body.children().each((ind, el) => { 
+     
+    })
+  }
+}
+
+  
+
+export default staticWeb;

@@ -1,21 +1,31 @@
-import React, { createContext, useState } from 'react';
-import { useRoutes } from 'react-router-dom';
-import router from './router/index'
+import { createContext, useState } from 'react'
+import { useRoutes } from 'react-router-dom'
+import { allRoutes }  from './router/index'
 
-interface GlobalContext  {
-  login: boolean,
+interface GolbalState{ 
+  login: boolean
 }
-const initContext: GlobalContext = {
-  login: false,
+interface IGlobalContext {
+  ctx: GolbalState
+  setCtx: React.Dispatch<React.SetStateAction<GolbalState>>;
 }
 
-export const globalContext = React.createContext(initContext)
+const initContext: IGlobalContext = {
+  ctx: {
+    login:false
+  },
+  setCtx: () => {}
+};
+
+export const globalContext = createContext<IGlobalContext>(initContext)
 
 function App() { 
-
-  return <globalContext.Provider value={initContext}>
-    {useRoutes(router)}
-  </globalContext.Provider>
+  const [ctx, setCtx] = useState<GolbalState>({login: false})
+  return (
+    <globalContext.Provider value={{ ctx, setCtx }}>
+      {useRoutes(allRoutes)}
+    </globalContext.Provider>
+  )
 }
 
 export default App;

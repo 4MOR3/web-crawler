@@ -24,7 +24,6 @@ async function login(ctx: Koa.Context<Api.LoginApi>, next: Koa.Next) {
     }
   }
   
-  
   await next();
 }
 function verify(password: string | string[] | undefined): boolean {
